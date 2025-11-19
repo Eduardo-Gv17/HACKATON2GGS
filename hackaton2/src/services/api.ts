@@ -23,10 +23,34 @@ const getAuthToken = (): string | null => {
 }
 
 // Interceptor para agregar el token a cada solicitud autenticada
-api.interceptors.request.use((config) => {
-  const token = getAuthToken()
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`
+api.interceptors.request.use(
+  (config) => {
+    const token = getAuthToken()
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`
+    }
+    return config
+  },
+  (error) => {
+    return Promise.reject(error)
   }
-  return config
-})
+)
+
+// Interceptor de respuesta para manejar errores 401 (no autorizado)
+api.interceptors.response.use(
+  (response) => {
+    return response
+  },
+  (error) => {
+    // Si recibimos un 401, el token es inválido o expiró
+    if (error.response?.status === 401) {
+      // Limpiar token y redirigir a login
+      localStorage.removeItem('jwt_token')
+      // Solo redirigir si no estamos ya en la página de login
+      if (window.location.pathname !== '/login' && window.location.pathname !== '/register') {
+        window.location.href = '/login'
+      }
+    }
+    return Promise.reject(error)
+  }
+)

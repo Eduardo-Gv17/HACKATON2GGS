@@ -1,4 +1,4 @@
-// src/components/projects/ProjectForm.tsx
+// src/components/projects/ProjectForm.tsx (ACTUALIZADO)
 
 import { useState, useEffect, type FormEvent } from "react";
 import type { Project, ProjectPayload, ProjectStatus } from "../../types";
@@ -64,10 +64,8 @@ export const ProjectForm = ({
   };
 
   return (
-    <div className="p-6 bg-white rounded-lg shadow-xl">
-      <h2 className="text-2xl font-bold mb-4">
-        {isEditing ? "Editar Proyecto" : "Crear Nuevo Proyecto"}
-      </h2>
+    // Se elimina el div de fondo y el título, que ahora son responsabilidad del Modal
+    <div>
       <form onSubmit={handleSubmit}>
         <Input
           label="Nombre del Proyecto"

@@ -5,6 +5,11 @@ export type TaskStatus = 'TODO' | 'IN_PROGRESS' | 'COMPLETED'
 
 export type TaskPriority = 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT'
 
+export interface TeamMember {
+  id: string
+  name: string
+  email: string
+}
 export interface User {
   id: string
   email: string
@@ -61,4 +66,40 @@ export interface TaskPayload {
   priority: TaskPriority
   dueDate: string
   assignedTo?: string
+}
+
+// Interfaces para Autenticación
+export interface LoginPayload {
+  email: string
+  password: string
+}
+
+export interface AuthPayload {
+  email: string
+  password: string
+  name: string
+}
+
+export interface LoginResponse {
+  token: string
+  user: User
+}
+
+export interface RegisterResponse {
+  message: string
+}
+
+// Interfaces para Equipo (Bonus)
+export interface TeamMember {
+  id: string
+  name: string
+  email: string
+}
+
+export interface TeamMembersResponse {
+  members: TeamMember[]
+}
+
+export interface MemberTasksResponse {
+  tasks: Task[]
 }

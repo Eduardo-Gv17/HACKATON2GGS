@@ -1,7 +1,8 @@
-// src/components/tasks/TaskCard.tsx
+// src/components/tasks/TaskCard.tsx (ACTUALIZADO - Uso de Card)
 
 import type { Task, TaskPriority, TaskStatus } from "../../types";
 import { Button } from "../common/Button";
+import { Card } from "../common/Card"; // 👈 Importar Card
 
 interface TaskCardProps {
   task: Task;
@@ -47,16 +48,14 @@ export const TaskCard = ({
   onToggleStatus,
 }: TaskCardProps) => {
   const priorityClasses = getPriorityColor(task.priority);
-  const statusClasses = getStatusIndicator(task.status);
+  const statusIndicator = getStatusIndicator(task.status); // Cambio de nombre para claridad
   const isCompleted = task.status === "COMPLETED";
 
   const handleToggleStatus = () => {
-    // Si está completada, la devuelve a TODO. Si no, la marca como COMPLETED.
     const newStatus: TaskStatus = isCompleted ? "TODO" : "COMPLETED";
     onToggleStatus(task.id, newStatus);
   };
 
-  // Formateo simple de la fecha de vencimiento
   const dueDate = new Date(task.dueDate).toLocaleDateString("es-ES", {
     year: "numeric",
     month: "short",
@@ -64,9 +63,7 @@ export const TaskCard = ({
   });
 
   return (
-    <div
-      className={`bg-white shadow-md rounded-lg p-4 transition duration-300 ${statusClasses}`}
-    >
+    <Card className={`${statusIndicator} p-4`}>
       <div className="flex justify-between items-start">
         <h3
           className={`text-lg font-semibold text-gray-900 ${
@@ -82,10 +79,8 @@ export const TaskCard = ({
         </span>
       </div>
       <p className="mt-1 text-sm text-gray-600">Vencimiento: {dueDate}</p>
-      <p className="text-xs text-gray-500">
-        Asignado a: {task.assignedTo}
-      </p>{" "}
-      {/* Mostrar nombre real en versión final */}
+      <p className="text-xs text-gray-500">Asignado a: {task.assignedTo}</p>
+
       <div className="mt-4 flex flex-wrap gap-2 justify-end">
         <Button variant="secondary" onClick={() => onView(task.id)}>
           Ver Detalles
@@ -101,6 +96,6 @@ export const TaskCard = ({
           Eliminar
         </Button>
       </div>
-    </div>
+    </Card>
   );
 };

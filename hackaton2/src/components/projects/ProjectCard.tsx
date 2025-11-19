@@ -1,8 +1,8 @@
-// src/components/projects/ProjectCard.tsx (ACTUALIZADO)
+// src/components/projects/ProjectCard.tsx (ACTUALIZADO - Uso de Card)
 
 import type { Project, ProjectStatus } from "../../types";
 import { Button } from "../common/Button";
-import { Card } from "../common/Card"; // 👈 Importar Card
+import { Card } from "../common/Card";
 
 interface ProjectCardProps {
   project: Project;
@@ -33,7 +33,6 @@ export const ProjectCard = ({
   const statusClasses = getStatusColor(project.status);
 
   return (
-    // Reemplaza el div por Card y añade estilos específicos
     <Card className="border border-gray-200 hover:border-indigo-500">
       <div className="flex justify-between items-start">
         <h3

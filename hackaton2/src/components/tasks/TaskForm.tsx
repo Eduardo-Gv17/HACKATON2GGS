@@ -6,7 +6,9 @@ import type {
   TaskPayload,
   TaskPriority,
   TaskStatus,
-  User,
+  // 🚨 CORRECCIÓN: Importamos TeamMember en lugar de User
+  TeamMember,
+  Project,
 } from "../../types";
 import { Button } from "../common/Button";
 import { Input } from "../common/Input";
@@ -15,9 +17,9 @@ interface TaskFormProps {
   task?: Task; // Opcional para editar
   onClose: () => void;
   onSubmit: (payload: TaskPayload) => Promise<void>;
-  // Datos simulados (en la implementación real vendrían de la API /team/members)
+  // 🚨 CORRECCIÓN: memberOptions ahora espera TeamMember[]
   projectOptions: Project[];
-  memberOptions: User[];
+  memberOptions: TeamMember[];
 }
 
 const initialPayload: TaskPayload = {
@@ -76,14 +78,13 @@ export const TaskForm = ({
     e.preventDefault();
     setIsLoading(true);
 
-    // El payload final es el formulario + el estado actual (si se está editando)
     const finalPayload: TaskPayload & { status?: TaskStatus } = { ...payload };
     if (isEditing) {
       finalPayload.status = currentStatus;
     }
 
     try {
-      await onSubmit(finalPayload as TaskPayload); // La lógica de actualización del estado se manejará en el componente padre o servicio
+      await onSubmit(finalPayload as TaskPayload);
       onClose();
     } catch (error) {
       console.error("Error al guardar tarea:", error);
@@ -94,10 +95,8 @@ export const TaskForm = ({
   };
 
   return (
-    <div className="p-6 bg-white rounded-lg shadow-xl max-h-[80vh] overflow-y-auto">
-      <h2 className="text-2xl font-bold mb-4">
-        {isEditing ? "Editar Tarea" : "Crear Nueva Tarea"}
-      </h2>
+    // Se elimina el div de fondo y el título, que ahora son responsabilidad del Modal
+    <div>
       <form onSubmit={handleSubmit}>
         <Input
           label="Título"

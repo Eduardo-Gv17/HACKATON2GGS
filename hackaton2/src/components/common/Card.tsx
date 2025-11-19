@@ -9,9 +9,6 @@ interface CardProps extends HTMLAttributes<HTMLDivElement> {
 
 /**
  * Componente genérico para crear tarjetas con estilos base de Tailwind.
- * @param children El contenido de la tarjeta.
- * @param className Clases adicionales para personalizar la tarjeta.
- * @param props Otras propiedades nativas de un div.
  */
 export const Card = ({ children, className = "", ...props }: CardProps) => {
   const baseStyles =
