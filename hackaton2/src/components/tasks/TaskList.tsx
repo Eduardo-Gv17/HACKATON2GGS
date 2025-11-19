@@ -7,18 +7,21 @@ import type {
   TaskStatus,
   Project,
   TaskPayload,
+  // 🚨 CORRECCIÓN: Importamos TeamMember
+  TeamMember,
 } from "../../types";
 import { taskService } from "../../services/taskService";
+import { projectService } from "../../services/projectService";
 import { TaskCard } from "./TaskCard";
 import { TaskForm } from "./TaskForm";
-// 🚨 Importar componentes comunes
 import { Button } from "../common/Button";
-import { Modal } from "../common/Modal"; // 👈 Importar el Modal
+import { Modal } from "../common/Modal";
 
 // Simulacro de miembros para el formulario
-const MOCK_TEAM_MEMBERS = [
-  { id: "user-1", email: "a@a.com", name: "Alice", createdAt: "" },
-  { id: "user-2", email: "b@b.com", name: "Bob", createdAt: "" },
+// 🚨 CORRECCIÓN: Tipamos el mock como TeamMember[]
+const MOCK_TEAM_MEMBERS: TeamMember[] = [
+  { id: "user-1", email: "a@a.com", name: "Alice" },
+  { id: "user-2", email: "b@b.com", name: "Bob" },
 ];
 
 const ITEMS_PER_PAGE = 20;
@@ -44,7 +47,6 @@ export const TaskList = () => {
   useEffect(() => {
     const fetchProjectsForFilter = async () => {
       try {
-        // Asume que la paginación a 100 es suficiente para obtener todos los proyectos para los filtros
         const data = await projectService.getProjects(1, 100);
         setProjects(data.projects);
       } catch (e) {
@@ -56,7 +58,6 @@ export const TaskList = () => {
 
   const fetchTasks = useCallback(
     async (page: number) => {
-      // ... (lógica de fetchTasks)
       setLoading(true);
       setError(null);
       try {
@@ -78,14 +79,13 @@ export const TaskList = () => {
       }
     },
     [filterProject, filterStatus, filterPriority]
-  ); // Aquí no incluyo filterAssignedTo porque la API no lo soporta en el README
+  );
 
   useEffect(() => {
-    fetchTasks(1); // Recargar lista al cambiar filtros
-  }, [filterProject, filterStatus, filterPriority, fetchTasks]); // filterAssignedTo se queda solo en el cliente
+    fetchTasks(1);
+  }, [filterProject, filterStatus, filterPriority, fetchTasks]);
 
   const handleCreateOrUpdateTask = async (payload: TaskPayload) => {
-    // ... (lógica de creación/actualización)
     if (editingTask) {
       await taskService.updateTask(editingTask.id, payload);
     } else {
@@ -97,7 +97,6 @@ export const TaskList = () => {
   };
 
   const handleDeleteTask = async (taskId: string) => {
-    // ... (lógica de eliminación)
     if (window.confirm("¿Estás seguro de que quieres eliminar esta tarea?")) {
       try {
         await taskService.deleteTask(taskId);
@@ -113,7 +112,6 @@ export const TaskList = () => {
     taskId: string,
     currentStatus: TaskStatus
   ) => {
-    // ... (lógica de actualización de estado)
     setLoading(true);
     try {
       const newStatus: TaskStatus =
@@ -142,6 +140,11 @@ export const TaskList = () => {
     console.log(`Ver detalles de tarea: ${taskId}`);
   };
 
+  // Filtrado local por usuario asignado
+  const filteredTasks = tasks.filter(
+    (task) => !filterAssignedTo || task.assignedTo === filterAssignedTo
+  );
+
   if (loading && tasks.length === 0)
     return <div className="text-center py-8">Cargando tareas...</div>;
   if (error)
@@ -156,11 +159,94 @@ export const TaskList = () => {
 
       {/* Filtros Avanzados */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-        {/* ... (lógica de select para filtros, usando componentes de selección normales) */}
+        <div>
+          <label
+            htmlFor="filterStatus"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Estado
+          </label>
+          <select
+            id="filterStatus"
+            value={filterStatus}
+            onChange={(e) => setFilterStatus(e.target.value)}
+            className="mt-1 block w-full pl-3 pr-10 py-2 border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 rounded-md sm:text-sm"
+          >
+            <option value="">Todos</option>
+            <option value="TODO">TODO</option>
+            <option value="IN_PROGRESS">EN PROGRESO</option>
+            <option value="COMPLETED">COMPLETADA</option>
+          </select>
+        </div>
+
+        <div>
+          <label
+            htmlFor="filterPriority"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Prioridad
+          </label>
+          <select
+            id="filterPriority"
+            value={filterPriority}
+            onChange={(e) => setFilterPriority(e.target.value)}
+            className="mt-1 block w-full pl-3 pr-10 py-2 border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 rounded-md sm:text-sm"
+          >
+            <option value="">Todos</option>
+            <option value="LOW">BAJA</option>
+            <option value="MEDIUM">MEDIA</option>
+            <option value="HIGH">ALTA</option>
+            <option value="URGENT">URGENTE</option>
+          </select>
+        </div>
+
+        <div>
+          <label
+            htmlFor="filterProject"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Proyecto
+          </label>
+          <select
+            id="filterProject"
+            value={filterProject}
+            onChange={(e) => setFilterProject(e.target.value)}
+            className="mt-1 block w-full pl-3 pr-10 py-2 border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 rounded-md sm:text-sm"
+          >
+            <option value="">Todos los Proyectos</option>
+            {projects.map((p) => (
+              <option key={p.id} value={p.id}>
+                {p.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label
+            htmlFor="filterAssignedTo"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Asignado a
+          </label>
+          <select
+            id="filterAssignedTo"
+            value={filterAssignedTo}
+            onChange={(e) => setFilterAssignedTo(e.target.value)}
+            className="mt-1 block w-full pl-3 pr-10 py-2 border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 rounded-md sm:text-sm"
+          >
+            <option value="">Cualquier Miembro</option>
+            {MOCK_TEAM_MEMBERS.map((m) => (
+              <option key={m.id} value={m.id}>
+                {m.name}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {tasks.map((task) => (
+        {filteredTasks.map((task) => (
           <TaskCard
             key={task.id}
             task={task}
@@ -172,7 +258,7 @@ export const TaskList = () => {
         ))}
       </div>
 
-      {tasks.length === 0 && !loading && (
+      {filteredTasks.length === 0 && !loading && (
         <div className="text-center py-12 text-gray-500">
           No se encontraron tareas con estos filtros.
         </div>
