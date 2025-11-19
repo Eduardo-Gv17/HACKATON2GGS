@@ -1,6 +1,6 @@
 // src/pages/Profile.tsx
 
-import { useAuth } from "../context/AuthContext"; // Usamos el contexto para acceder a los datos
+import { useAuth } from "../context/AuthContext";
 import { Card } from "../components/common/Card";
 import { Button } from "../components/common/Button";
 
@@ -21,8 +21,11 @@ export const Profile = () => {
 
       <Card className="space-y-4">
         <div className="text-left">
-          <p className="text-sm font-medium text-gray-500">Nombre:</p>
-          <p className="text-lg font-semibold text-gray-800">{user.name}</p>
+          <p className="text-sm font-medium text-gray-500">
+            Nombre de usuario:
+          </p>
+          {/* [Corregido: user.name por user.username según tu AuthContext] */}
+          <p className="text-lg font-semibold text-gray-800">{user.username}</p>
         </div>
 
         <div className="text-left">

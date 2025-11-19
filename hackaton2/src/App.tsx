@@ -1,63 +1,46 @@
-// src/App.tsx (Implementación Final)
+// src/App.tsx
 
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 
-// Componentes de la aplicación
-import { ProtectedRoute } from "./components/auth/ProtectedRoute";
-import { Navbar } from "./components/layout/Navbar"; // 🚨 Asumimos un componente de navegación
-
-// Páginas de la aplicación (asumiendo que las creaste en src/pages)
+// Páginas existentes
 import { Login } from "./pages/Login";
-import { Register } from "./pages/Register"; // Nueva página
+import { Register } from "./pages/Register";
 import { Dashboard } from "./pages/Dashboard";
 import { Projects } from "./pages/Projects";
 import { Tasks } from "./pages/Tasks";
-import { Profile } from "./pages/Profile"; // Nueva página
+import { Profile } from "./pages/Profile";
 
 function App() {
   return (
     <BrowserRouter>
-      {/* El AuthProvider envuelve toda la lógica de rutas */}
       <AuthProvider>
-        {/* Opcional: Una barra de navegación en la parte superior para enlaces */}
-        <Navbar />
-
-        <main className="pt-16">
-          {" "}
-          {/* Añadir padding si la Navbar es fija */}
+        {/* Se ha eliminado el Navbar porque no está en los archivos subidos */}
+        <main className="min-h-screen bg-gray-50">
           <Routes>
-            {/* Rutas Públicas (accesibles sin login) */}
+            {/* Rutas de Autenticación */}
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
 
-            {/* Redirección de la raíz */}
+            {/* Redirección por defecto */}
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
 
-            {/* Rutas Protegidas (Requieren autenticación) */}
-            <Route element={<ProtectedRoute />}>
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/projects" element={<Projects />} />
-              <Route path="/tasks" element={<Tasks />} />
-              <Route path="/profile" element={<Profile />} />{" "}
-              {/* Ruta de perfil */}
-              {/* Rutas para detalles (ejemplo) */}
-              <Route
-                path="/projects/:id"
-                element={<div>Detalle del Proyecto</div>}
-              />
-              <Route
-                path="/tasks/:id"
-                element={<div>Detalle de la Tarea</div>}
-              />
-            </Route>
+            {/* Rutas Principales (Anteriormente Protegidas)
+               Al no tener ProtectedRoute, estas rutas son accesibles directamente.
+               La validación de sesión dependerá de cada página o de la API.
+            */}
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/projects" element={<Projects />} />
+            <Route path="/tasks" element={<Tasks />} />
+            <Route path="/profile" element={<Profile />} />
 
-            {/* Ruta de 404 (No encontrada) */}
+            {/* Ruta 404 */}
             <Route
               path="*"
               element={
-                <div className="text-center py-20 text-2xl">
-                  404 | Página No Encontrada
+                <div className="flex flex-col items-center justify-center h-[80vh] text-gray-600">
+                  <h1 className="text-4xl font-bold mb-4">404</h1>
+                  <p className="text-xl">Página no encontrada</p>
                 </div>
               }
             />
